@@ -3,13 +3,32 @@ import streamlit as st
 import pandas as pd
 import joblib
 import numpy as np
+from pathlib import Path
 
 # =========================
 # LOAD MODEL
 # =========================
-rf_model = joblib.load('rf_model.pkl')
-scaler = joblib.load('scaler.pkl')
-feature_columns = joblib.load('feature_columns.pkl')
+
+def load_pickle(filename: str):
+    file_path = Path(filename)
+    if not file_path.is_file():
+        st.error(
+            f"File model tidak ditemukan: '{filename}'.\n" 
+            "Pastikan file model berada di folder yang sama dengan app.py dan coba lagi."
+        )
+        st.stop()
+    try:
+        return joblib.load(file_path)
+    except Exception as exc:
+        st.error(
+            f"Gagal memuat '{filename}': {exc}.\n" 
+            "Periksa apakah file model valid dan bukan rusak."
+        )
+        st.stop()
+
+rf_model = load_pickle('rf_model.pkl')
+scaler = load_pickle('scaler.pkl')
+feature_columns = load_pickle('feature_columns.pkl')
 
 # =========================
 # PAGE CONFIG
